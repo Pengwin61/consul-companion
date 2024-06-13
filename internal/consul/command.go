@@ -13,7 +13,7 @@ import (
 func GetMembers(config cfg.Config) []ResponseMembers {
 	var response []ResponseMembers
 
-	url := fmt.Sprintf("%s://%s/v1/agent/members", cfg.Scheme, config.ConsulAddress)
+	url := fmt.Sprintf("%s://%s/v1/agent/members", cfg.ConsulHTTPScheme, config.ConsulAddress)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -49,7 +49,7 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 
 	var response Data
 
-	url := fmt.Sprintf("%s://%s/v1/catalog/node-services/%s", cfg.Scheme, config.ConsulAddress, nodeName)
+	url := fmt.Sprintf("%s://%s/v1/catalog/node-services/%s", cfg.ConsulHTTPScheme, config.ConsulAddress, nodeName)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -75,6 +75,10 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 		fmt.Println("Error unmarshalling JSON:", err)
 	}
 
+	if len(response.Services) == 0 {
+		fmt.Println("No services found for node:", nodeName)
+	}
+
 	return response
 }
 
@@ -93,7 +97,7 @@ func DeregisterService(config cfg.Config, nodeName string, serviceID string) {
 		return
 	}
 
-	url := fmt.Sprintf("%s://%s/v1/catalog/deregister", cfg.Scheme, config.ConsulAddress)
+	url := fmt.Sprintf("%s://%s/v1/catalog/deregister", cfg.ConsulHTTPScheme, config.ConsulAddress)
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(payloadData))
 	if err != nil {

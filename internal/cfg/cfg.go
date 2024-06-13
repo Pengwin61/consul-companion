@@ -1,15 +1,18 @@
 package cfg
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os"
 )
 
-var Scheme = "http"
+var ConsulHTTPScheme string
 
 type Config struct {
 	ConsulAddress string
 	ConsulToken   string
+	Host          string
 }
 
 func GetConfig() Config {
@@ -23,8 +26,23 @@ func GetConfig() Config {
 		log.Fatal("CONSUL_HTTP_TOKEN not set")
 	}
 
+	ConsulHTTPScheme = os.Getenv("CONSUL_HTTP_SCHEME")
+	if ConsulHTTPScheme == "" {
+		ConsulHTTPScheme = "http"
+		fmt.Println(fmt.Sprintf("Consul Connection URL: %s://%s", ConsulHTTPScheme, consulAddress))
+
+	}
+
+	// Получаем хост из флага
+	host := flag.String("host", "127.0.0.1", "hosts ")
+	if *host == "" {
+		log.Fatal("host is empty, i can`t get host")
+	}
+	flag.Parse()
+
 	return Config{
 		ConsulAddress: consulAddress,
-		ConsulToken:   consulToken}
+		ConsulToken:   consulToken,
+		Host:          *host}
 
 }
