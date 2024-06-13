@@ -16,7 +16,7 @@ func main() {
 
 	for _, r := range svcList.Services {
 
-		// consul.DeregisterService(config, svcList.Node.Node, r.ID)
+		consul.DeregisterService(config, svcList.Node.Node, r.ID)
 		fmt.Println("Deregistered service:", r.ID, "Node:", svcList.Node.Node, "Address:", svcList.Node.Address)
 	}
 
