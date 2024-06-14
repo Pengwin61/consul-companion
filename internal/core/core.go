@@ -41,6 +41,9 @@ func GetProjects() ([]Project, error) {
 		if !project.IsDir() {
 			continue
 		}
+		if project.Name() == "containerd" {
+			continue
+		}
 		projects = append(projects, Project{project.Name(), filepath.Join(path, project.Name()), filepath.Join(path, project.Name(), ".env"), nil})
 
 	}
