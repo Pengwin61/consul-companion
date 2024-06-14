@@ -45,9 +45,12 @@ func main() {
 				parts := strings.Split(prj.Name, "-")
 				index := len(parts) - 1
 
+				partsPrjName := strings.Split(prj.Name, "-")
+				projectName := strings.Join(partsPrjName[:len(parts)-1], "-")
+
 				services = append(services, core.ServiceData{
 					Name:     fmt.Sprintf("%s-%s", svcName, prj.Name),
-					Tags:     []string{svcName, parts[index]},
+					Tags:     []string{svcName, parts[index], projectName},
 					Port:     env.Value,
 					Interval: "5s",
 					Timeout:  "5s",
