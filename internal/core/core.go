@@ -19,7 +19,7 @@ type Env struct {
 	Value string
 }
 
-const path = "/opt/project"
+const path = "/opt"
 
 func GetProjects() ([]Project, error) {
 	var projects []Project
