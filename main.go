@@ -3,6 +3,12 @@ package main
 import (
 	"consul-companion/internal/core"
 	"flag"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func init() {
@@ -13,6 +19,7 @@ func init() {
 }
 
 func main() {
+	errCh := make(chan error)
 
 	// config := cfg.GetConfig()
 
@@ -26,6 +33,30 @@ func main() {
 	// 	fmt.Println("Deregistered service:", r.ID, "Node:", svcList.Node.Node, "Address:", svcList.Node.Address)
 	// }
 
-	core.RunCreatesServices()
+	go func() {
+		for err := range errCh {
+			log.Println(err)
+		}
+	}()
+
+	go gracefulShutdown()
+
+	for {
+		fmt.Println("Starting...")
+		core.RunCreatesServices()
+		time.Sleep(10 * time.Second)
+
+	}
+
+}
+
+func gracefulShutdown() {
+	// Graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+	sign := <-stop
+
+	log.Println("stopping application:", sign)
+	os.Exit(0)
 
 }
