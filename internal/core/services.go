@@ -7,6 +7,7 @@ import (
 
 type ServiceData struct {
 	Name     string
+	Project  string
 	Tags     []string
 	Port     string
 	Interval string
@@ -22,22 +23,25 @@ func CreateServiceFile(service ServiceData) {
 
 service {
 	 name = "{{.Name}}"
-	 id = "{{.Name}}"
+	 id = "{{.Name}}-{{.Project}}"
 	 tags = [{{range .Tags}}"{{.}}",{{end}}]
 	 port = {{.Port}}
    
 	 check
 	 {
 	   name = "{{.Name}} status check",
-	   id =  "{{.Name}}",
-	   service_id = "{{.Name}}",
+	   id =  "{{.Name}}-{{.Project}}",
+	   service_id = "{{.Name}}-{{.Project}}",
 		 tcp  = "localhost:{{.Port}}",
 		 interval = "{{.Interval}}",
 		 timeout = "{{.Timeout}}"
 	 }
    }`
 
-	file, err := os.Create("." + "/" + "temp" + "/" + service.Name + ".hcl")
+	path := "./" + "temp"
+	fullName := path + "/" + service.Name + "-" + service.Project + ".hcl"
+
+	file, err := os.Create(fullName)
 	if err != nil {
 		panic(err)
 	}

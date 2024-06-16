@@ -2,7 +2,7 @@ package main
 
 import (
 	"consul-companion/internal/core"
-	"fmt"
+	"flag"
 	"strings"
 )
 
@@ -10,6 +10,10 @@ func main() {
 
 	// config := cfg.GetConfig()
 
+	pathSearch := flag.String("search", "/opt", "path to search project ")
+	flag.Parse()
+
+	core.Path = *pathSearch
 	// // res := consul.GetMembers(config)
 
 	// svcList := consul.GetNodeServices(config, config.Host)
@@ -49,7 +53,9 @@ func main() {
 				projectName := strings.Join(partsPrjName[:len(parts)-1], "-")
 
 				services = append(services, core.ServiceData{
-					Name:     fmt.Sprintf("%s-%s", svcName, prj.Name),
+					// Name:     fmt.Sprintf("%s-%s", svcName, prj.Name),
+					Name:     svcName,
+					Project:  prj.Name,
 					Tags:     []string{svcName, parts[index], projectName},
 					Port:     env.Value,
 					Interval: "5s",

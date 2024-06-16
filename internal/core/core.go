@@ -19,12 +19,12 @@ type Env struct {
 	Value string
 }
 
-const path = "/opt"
+var Path = "/opt"
 
 func GetProjects() ([]Project, error) {
 	var projects []Project
 
-	dir, err := os.Open(path)
+	dir, err := os.Open(Path)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -44,7 +44,7 @@ func GetProjects() ([]Project, error) {
 		if project.Name() == "containerd" {
 			continue
 		}
-		projects = append(projects, Project{project.Name(), filepath.Join(path, project.Name()), filepath.Join(path, project.Name(), ".env"), nil})
+		projects = append(projects, Project{project.Name(), filepath.Join(Path, project.Name()), filepath.Join(Path, project.Name(), ".env"), nil})
 
 	}
 	return projects, err
@@ -56,7 +56,8 @@ func GetEnv(projects []Project) []Project {
 	for _, project := range projects {
 		content, err := os.ReadFile(project.DotEnv)
 		if err != nil {
-			log.Fatalf("Ошибка чтения файла: %v", err)
+			log.Printf("Ошибка чтения файла: %v", err)
+			continue
 		}
 
 		lines := strings.Split(string(content), "\n")
@@ -67,8 +68,6 @@ func GetEnv(projects []Project) []Project {
 			}
 			key := strings.TrimSpace(pair[0])
 			value := strings.TrimSpace(pair[1])
-
-			// project.Env = append(project.Env, Env{key, value})
 
 			prjs = append(prjs, Project{project.Name, project.Path, project.DotEnv, append(project.Env, Env{key, value})})
 		}
