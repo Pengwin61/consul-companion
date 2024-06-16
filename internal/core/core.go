@@ -21,7 +21,7 @@ type Env struct {
 
 var Path = "/opt"
 
-func GetProjects() ([]Project, error) {
+func getListProjects() ([]Project, error) {
 	var projects []Project
 
 	dir, err := os.Open(Path)
@@ -50,7 +50,7 @@ func GetProjects() ([]Project, error) {
 	return projects, err
 }
 
-func GetEnv(projects []Project) []Project {
+func getListEnv(projects []Project) []Project {
 	var prjs []Project
 
 	for _, project := range projects {

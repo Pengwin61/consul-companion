@@ -1,7 +1,9 @@
 package core
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -14,7 +16,29 @@ type ServiceData struct {
 	Timeout  string
 }
 
-func CreateServiceFile(service ServiceData) {
+func RunCreatesServices() {
+
+	prjs, _ := getListProjects()
+	p := getListEnv(prjs)
+
+	var services []ServiceData
+
+	for _, prj := range p {
+		for _, env := range prj.Env {
+			if strings.Contains(env.Key, "#") {
+				continue
+			}
+			convertServiceFile(env, prj, &services)
+
+		}
+	}
+
+	for _, service := range services {
+		createServiceFile(service)
+	}
+}
+
+func createServiceFile(service ServiceData) {
 
 	// Создаем шаблон для файла
 	tmpl := `## -----------------------------
@@ -52,5 +76,28 @@ service {
 	if err != nil {
 		panic(err)
 	}
+}
 
+func convertServiceFile(env Env, prj Project, services *[]ServiceData) {
+
+	if strings.Contains(env.Key, "EXT") {
+		svcName := strings.Replace(env.Key, "EXT_", "", 1)
+		svcName = strings.Replace(svcName, "_PORT", "", 1)
+		svcName = strings.ToLower(svcName)
+
+		parts := strings.Split(prj.Name, "-")
+		index := len(parts) - 1
+
+		partsPrjName := strings.Split(prj.Name, "-")
+		projectName := strings.Join(partsPrjName[:len(parts)-1], "-")
+
+		*services = append(*services, ServiceData{
+			Name:     svcName,
+			Project:  prj.Name,
+			Tags:     []string{svcName, parts[index], projectName, fmt.Sprintf(projectName + "-" + parts[index])},
+			Port:     env.Value,
+			Interval: "5s",
+			Timeout:  "5s",
+		})
+	}
 }
