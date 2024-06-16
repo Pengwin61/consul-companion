@@ -3,6 +3,7 @@ package main
 import (
 	"consul-companion/internal/core"
 	"flag"
+	"fmt"
 	"strings"
 )
 
@@ -56,7 +57,7 @@ func main() {
 					// Name:     fmt.Sprintf("%s-%s", svcName, prj.Name),
 					Name:     svcName,
 					Project:  prj.Name,
-					Tags:     []string{svcName, parts[index], projectName},
+					Tags:     []string{svcName, parts[index], projectName, fmt.Sprintf(projectName + "-" + parts[index])},
 					Port:     env.Value,
 					Interval: "5s",
 					Timeout:  "5s",
