@@ -1,7 +1,6 @@
 package core
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,20 +20,20 @@ type Env struct {
 
 var Path = "/opt"
 
-func getListProjects() ([]Project, error) {
+func getListProjects(errCh chan error) []Project {
 	var projects []Project
 
 	dir, err := os.Open(Path)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		errCh <- err
+		return nil
 	}
 	defer dir.Close()
 
 	folder, err := dir.ReadDir(-1)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		errCh <- err
+		return nil
 	}
 
 	for _, project := range folder {
@@ -47,16 +46,16 @@ func getListProjects() ([]Project, error) {
 		projects = append(projects, Project{project.Name(), filepath.Join(Path, project.Name()), filepath.Join(Path, project.Name(), ".env"), nil})
 
 	}
-	return projects, err
+	return projects
 }
 
-func getListEnv(projects []Project) []Project {
+func getListEnv(projects []Project, errCh chan error) []Project {
 	var prjs []Project
 
 	for _, project := range projects {
 		content, err := os.ReadFile(project.DotEnv)
 		if err != nil {
-			log.Printf("Ошибка чтения файла: %v", err)
+			errCh <- err
 			continue
 		}
 

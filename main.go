@@ -3,7 +3,6 @@ package main
 import (
 	"consul-companion/internal/core"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -13,15 +12,19 @@ import (
 
 func init() {
 	pathSearch := flag.String("search", "/opt", "path to search project ")
+	pathConfig := flag.String("path", "/etc/consul/consul.d", "path to config ")
 	flag.Parse()
 
 	core.Path = *pathSearch
+	core.CFG_PATH = *pathConfig
+
 }
 
 func main() {
+	isSrarted := true
 	errCh := make(chan error)
 
-	// config := cfg.GetConfig()
+	// cfg := cfg.GetConfig()
 
 	// // res := consul.GetMembers(config)
 
@@ -42,8 +45,12 @@ func main() {
 	go gracefulShutdown()
 
 	for {
-		fmt.Println("Starting...")
-		core.RunCreatesServices()
+		if isSrarted {
+			log.Println("Starting...")
+			isSrarted = false
+		}
+
+		core.RunCreatesServices(errCh)
 		time.Sleep(10 * time.Second)
 
 	}

@@ -10,6 +10,8 @@
 
 ```
 go run main.go --host="node-name"
+
+go run main.go --search="/opt/project/" --path="./temp"
 ```
 
 #

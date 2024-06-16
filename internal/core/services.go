@@ -16,10 +16,12 @@ type ServiceData struct {
 	Timeout  string
 }
 
-func RunCreatesServices() {
+var CFG_PATH string
 
-	prjs, _ := getListProjects()
-	p := getListEnv(prjs)
+func RunCreatesServices(errCh chan error) {
+
+	prjs := getListProjects(errCh)
+	p := getListEnv(prjs, errCh)
 
 	var services []ServiceData
 
@@ -29,7 +31,6 @@ func RunCreatesServices() {
 				continue
 			}
 			convertServiceFile(env, prj, &services)
-
 		}
 	}
 
@@ -62,8 +63,7 @@ service {
 	 }
    }`
 
-	path := "./" + "temp"
-	fullName := path + "/" + service.Name + "-" + service.Project + ".hcl"
+	fullName := CFG_PATH + "/" + service.Name + "-" + service.Project + ".hcl"
 
 	file, err := os.Create(fullName)
 	if err != nil {
