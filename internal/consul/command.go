@@ -85,7 +85,7 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 // func RegisterService(config cfg.Config) {
 // }
 
-func DeregisterService(config cfg.Config, nodeName string, serviceID string) {
+func DeregisterService(config cfg.Config, nodeName string, serviceID string, nodeIp string) {
 
 	payload := map[string]string{
 		"Node":      nodeName,
@@ -120,6 +120,6 @@ func DeregisterService(config cfg.Config, nodeName string, serviceID string) {
 	}
 
 	if string(body) == "true" {
-		fmt.Printf("Service %s on node %s deregistered successfully\n", serviceID, nodeName)
+		fmt.Printf("Service: %s node: %s ip: %s deregistered successfully\n", serviceID, nodeName, nodeIp)
 	}
 }
