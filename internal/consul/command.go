@@ -70,6 +70,9 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 		fmt.Println("Error reading response body:", err)
 	}
 
+	fmt.Println(string(body))
+	fmt.Println(response)
+
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		fmt.Println("Error unmarshalling JSON:", err)
