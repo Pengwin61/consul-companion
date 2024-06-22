@@ -51,6 +51,7 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 
 	url := fmt.Sprintf("%s://%s/v1/catalog/node-services/%s", config.ConsulScheme, config.ConsulAddress, nodeName)
 
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -85,6 +86,7 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 // func RegisterService(config cfg.Config) {
 // }
 
+
 func DeregisterService(config cfg.Config, nodeName string, serviceID string, nodeAddress string) {
 
 	payload := map[string]string{
@@ -97,7 +99,9 @@ func DeregisterService(config cfg.Config, nodeName string, serviceID string, nod
 		return
 	}
 
+
 	url := fmt.Sprintf("%s://%s/v1/catalog/deregister", config.ConsulScheme, config.ConsulAddress)
+
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(payloadData))
 	if err != nil {
