@@ -13,7 +13,7 @@ import (
 func GetMembers(config cfg.Config) []ResponseMembers {
 	var response []ResponseMembers
 
-	url := fmt.Sprintf("%s://%s/v1/agent/members", cfg.ConsulHTTPScheme, config.ConsulAddress)
+	url := fmt.Sprintf("%s://%s/v1/agent/members", config.ConsulScheme, config.ConsulAddress)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -49,7 +49,8 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 
 	var response Data
 
-	url := fmt.Sprintf("%s://%s/v1/catalog/node-services/%s", cfg.ConsulHTTPScheme, config.ConsulAddress, nodeName)
+	url := fmt.Sprintf("%s://%s/v1/catalog/node-services/%s", config.ConsulScheme, config.ConsulAddress, nodeName)
+
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -85,7 +86,8 @@ func GetNodeServices(config cfg.Config, nodeName string) Data {
 // func RegisterService(config cfg.Config) {
 // }
 
-func DeregisterService(config cfg.Config, nodeName string, serviceID string, nodeIp string) {
+
+func DeregisterService(config cfg.Config, nodeName string, serviceID string, nodeAddress string) {
 
 	payload := map[string]string{
 		"Node":      nodeName,
@@ -97,7 +99,9 @@ func DeregisterService(config cfg.Config, nodeName string, serviceID string, nod
 		return
 	}
 
-	url := fmt.Sprintf("%s://%s/v1/catalog/deregister", cfg.ConsulHTTPScheme, config.ConsulAddress)
+
+	url := fmt.Sprintf("%s://%s/v1/catalog/deregister", config.ConsulScheme, config.ConsulAddress)
+
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(payloadData))
 	if err != nil {
@@ -120,6 +124,6 @@ func DeregisterService(config cfg.Config, nodeName string, serviceID string, nod
 	}
 
 	if string(body) == "true" {
-		fmt.Printf("Service: %s node: %s ip: %s deregistered successfully\n", serviceID, nodeName, nodeIp)
+		fmt.Printf("Service: %s Node Name: %s Node IP: %s deregistered successfully\n", serviceID, nodeName, nodeAddress)
 	}
 }
