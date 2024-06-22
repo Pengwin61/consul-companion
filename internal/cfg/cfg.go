@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-
 func GetConfig() Config {
 	consulAddress := os.Getenv("CONSUL_HTTP_ADDR")
 	if consulAddress == "" {
@@ -21,10 +20,10 @@ func GetConfig() Config {
 	consulHTTPScheme := os.Getenv("CONSUL_HTTP_SCHEME")
 	if consulHTTPScheme == "" {
 		consulHTTPScheme = "http"
-		log.Println(fmt.Sprintf("Consul Connection URL: %s://%s", consulHTTPScheme, consulAddress))
+		fmt.Println(fmt.Sprintf("Consul Connection URL: %s://%s", consulHTTPScheme, consulAddress))
 	} else {
 		consulHTTPScheme = "https"
-		log.Println(fmt.Sprintf("Consul Connection URL: %s://%s", consulHTTPScheme, consulAddress))
+		fmt.Println(fmt.Sprintf("Consul Connection URL: %s://%s", consulHTTPScheme, consulAddress))
 	}
 
 	return Config{
