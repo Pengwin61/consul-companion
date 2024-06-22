@@ -1,6 +1,7 @@
 package core
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,12 +19,12 @@ type Env struct {
 	Value string
 }
 
-var Path = "/opt"
+var RootProjectPath = "/opt"
 
 func getListProjects(errCh chan error) []Project {
 	var projects []Project
 
-	dir, err := os.Open(Path)
+	dir, err := os.Open(RootProjectPath)
 	if err != nil {
 		errCh <- err
 		return nil
@@ -38,12 +39,14 @@ func getListProjects(errCh chan error) []Project {
 
 	for _, project := range folder {
 		if !project.IsDir() {
+			log.Println("skip", project.Name())
 			continue
+
 		}
 		if project.Name() == "containerd" {
 			continue
 		}
-		projects = append(projects, Project{project.Name(), filepath.Join(Path, project.Name()), filepath.Join(Path, project.Name(), ".env"), nil})
+		projects = append(projects, Project{project.Name(), filepath.Join(RootProjectPath, project.Name()), filepath.Join(RootProjectPath, project.Name(), ".env"), nil})
 
 	}
 	return projects

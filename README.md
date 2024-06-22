@@ -9,17 +9,22 @@
 # Run
 
 ```
-go run main.go --host="node-name"
+go run main.go api deregister --target "node-name"
 
-go run main.go --search="/opt/project/" --path="./temp"
+
+go run main.go sd watch --conf-dir "./temp" --search "/opt/project"
 ```
 
 #
-
+ENV for API
 ```
 export CONSUL_HTTP_ADDR="127.0.0.1:8500"
 export CONSUL_HTTP_TOKEN="TOKEN"
 
 export CONSUL_HTTP_SCHEME="https" (default:http)
+
+```
+ENV for SD (service discovery)
+```
 
 ```

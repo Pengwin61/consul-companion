@@ -16,13 +16,12 @@ type ServiceData struct {
 	Timeout  string
 }
 
-var CFG_PATH string
+var CONFDIR string
 
 func RunCreatesServices(errCh chan error) {
 
 	prjs := getListProjects(errCh)
 	p := getListEnv(prjs, errCh)
-
 	var services []ServiceData
 
 	for _, prj := range p {
@@ -63,7 +62,8 @@ service {
 	 }
    }`
 
-	fullName := CFG_PATH + "/" + service.Name + "-" + service.Project + ".hcl"
+	fullName := CONFDIR + "/" + service.Name + "-" + service.Project + ".hcl"
+	fmt.Println("Create file:", fullName)
 
 	file, err := os.Create(fullName)
 	if err != nil {
