@@ -1,4 +1,4 @@
-package consul
+package api_consul
 
 import (
 	"bytes"
