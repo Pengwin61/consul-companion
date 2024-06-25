@@ -2,7 +2,9 @@ package core
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path"
 	"strings"
 	"text/template"
 )
@@ -34,11 +36,23 @@ func RunCreatesServices(errCh chan error) {
 	}
 
 	for _, service := range services {
-		createServiceFile(service)
+		targetDir := "/tmp/consul-companion"
+		mkDir(targetDir)
+
+		tmpFile := path.Join(targetDir, service.Name+"-"+service.Project+".tmp")
+		currentFile := path.Join(CONFDIR, service.Name+"-"+service.Project+".hcl")
+
+		createServiceFile(service, tmpFile)
+		ok := DiffChecksum(currentFile, tmpFile)
+
+		if !ok {
+			log.Println("File changed", currentFile)
+			createServiceFile(service, currentFile)
+		}
 	}
 }
 
-func createServiceFile(service ServiceData) {
+func createServiceFile(service ServiceData, path string) {
 
 	// Создаем шаблон для файла
 	tmpl := `## -----------------------------
@@ -46,26 +60,23 @@ func createServiceFile(service ServiceData) {
 ## -----------------------------
 
 service {
-	 name = "{{.Name}}"
-	 id = "{{.Name}}-{{.Project}}"
-	 tags = [{{range .Tags}}"{{.}}",{{end}}]
-	 port = {{.Port}}
-   
-	 check
-	 {
-	   name = "{{.Name}} status check",
-	   id =  "{{.Name}}-{{.Project}}",
-	   service_id = "{{.Name}}-{{.Project}}",
-		 tcp  = "localhost:{{.Port}}",
-		 interval = "{{.Interval}}",
-		 timeout = "{{.Timeout}}"
-	 }
+	name = "{{.Name}}"
+	id = "{{.Name}}-{{.Project}}"
+	tags = [{{range .Tags}}"{{.}}",{{end}}]
+	port = {{.Port}}
+
+	check
+	{
+	  name = "{{.Name}} status check",
+	  id =  "{{.Name}}-{{.Project}}",
+	  service_id = "{{.Name}}-{{.Project}}",
+		tcp  = "localhost:{{.Port}}",
+		interval = "{{.Interval}}",
+		timeout = "{{.Timeout}}"
+	}
    }`
 
-	fullName := CONFDIR + "/" + service.Name + "-" + service.Project + ".hcl"
-	fmt.Println("Create file:", fullName)
-
-	file, err := os.Create(fullName)
+	file, err := os.Create(path)
 	if err != nil {
 		panic(err)
 	}

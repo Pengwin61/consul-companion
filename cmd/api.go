@@ -23,7 +23,6 @@ var apiCmd = &cobra.Command{
 			svcList := api_consul.GetNodeServices(config, t)
 
 			for _, r := range svcList.Services {
-
 				api_consul.DeregisterService(config, svcList.Node.Node, r.ID, svcList.Node.Address)
 			}
 		}

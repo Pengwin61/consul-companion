@@ -6,7 +6,6 @@ package cmd
 import (
 	"consul-companion/internal/cfg"
 	"consul-companion/internal/core"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -14,12 +13,11 @@ import (
 // sdCmd represents the sd command
 var sdCmd = &cobra.Command{
 	Use:   "sd",
-	Short: "A brief description of your command",
-	Long:  `.`,
+	Short: "Service Discovery on host",
+	Long:  `Service Discovery on host`,
 	Run: func(cmd *cobra.Command, args []string) {
 		search, _ := cmd.Flags().GetString("search")
 		confdir, _ := cmd.Flags().GetString("conf-dir")
-		fmt.Println("flags", search, "path:", confdir)
 
 		if args[0] == "watch" {
 			cfg.SDConfig(search, confdir)
