@@ -28,7 +28,7 @@ func watch() {
 		}
 
 		RunCreatesServices(errCh)
-		time.Sleep(10 * time.Second)
+		time.Sleep(60 * time.Second)
 
 	}
 }
