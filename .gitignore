@@ -21,4 +21,5 @@
 go.work
 go.work.sum
 
-temp/*.hcl
+temp/consul.d/*.hcl
+!temp/projects/

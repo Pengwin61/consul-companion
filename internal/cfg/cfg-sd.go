@@ -1,10 +1,14 @@
 package cfg
 
-import "consul-companion/internal/core"
+var (
+	ROOT_PROJECT_PATH string
+	CONFDIR           string
+	TMP_DIR           = "/tmp/consul-companion"
+)
 
 func SDConfig(search string, confdir string) {
 
-	core.RootProjectPath = search
-	core.CONFDIR = confdir
+	ROOT_PROJECT_PATH = search
+	CONFDIR = confdir
 
 }

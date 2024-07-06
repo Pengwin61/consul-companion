@@ -1,6 +1,7 @@
 package core
 
 import (
+	"consul-companion/internal/cfg"
 	"fmt"
 	"log"
 	"os"
@@ -9,50 +10,38 @@ import (
 	"text/template"
 )
 
-type ServiceData struct {
-	Name     string
-	Project  string
-	Tags     []string
-	Port     string
-	Interval string
-	Timeout  string
-}
-
-var CONFDIR string
-
 func RunCreatesServices(errCh chan error) {
-
-	prjs := getListProjects(errCh)
-	p := getListEnv(prjs, errCh)
 	var services []ServiceData
 
-	for _, prj := range p {
-		for _, env := range prj.Env {
+	litsProjects := getListProjects(errCh)
+	projectsWhithServices := getListEnv(litsProjects, errCh)
+
+	for _, project := range projectsWhithServices {
+		for _, env := range project.Env {
 			if strings.Contains(env.Key, "#") {
 				continue
 			}
-			convertServiceFile(env, prj, &services)
+			project.convertServiceFile(env, &services)
 		}
 	}
 
 	for _, service := range services {
-		targetDir := "/tmp/consul-companion"
-		mkDir(targetDir)
+		mkDir(cfg.TMP_DIR)
 
-		tmpFile := path.Join(targetDir, service.Name+"-"+service.Project+".tmp")
-		currentFile := path.Join(CONFDIR, service.Name+"-"+service.Project+".hcl")
+		tmpFile := path.Join(cfg.TMP_DIR, service.Name+"-"+service.Project+".tmp")
+		currentFile := path.Join(cfg.CONFDIR, service.Name+"-"+service.Project+".hcl")
 
-		createServiceFile(service, tmpFile)
+		service.createServiceFile(tmpFile)
 		ok := DiffChecksum(currentFile, tmpFile)
 
 		if !ok {
 			log.Println("File changed", currentFile)
-			createServiceFile(service, currentFile)
+			service.createServiceFile(currentFile)
 		}
 	}
 }
 
-func createServiceFile(service ServiceData, path string) {
+func (s *ServiceData) createServiceFile(path string) {
 
 	// Создаем шаблон для файла
 	tmpl := `## -----------------------------
@@ -83,28 +72,28 @@ service {
 	defer file.Close()
 
 	t := template.Must(template.New("serviceTemplate").Parse(tmpl))
-	err = t.Execute(file, service)
+	err = t.Execute(file, s)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func convertServiceFile(env Env, prj Project, services *[]ServiceData) {
+func (p *Project) convertServiceFile(env Env, services *[]ServiceData) {
 
 	if strings.Contains(env.Key, "EXT") {
 		svcName := strings.Replace(env.Key, "EXT_", "", 1)
 		svcName = strings.Replace(svcName, "_PORT", "", 1)
 		svcName = strings.ToLower(svcName)
 
-		parts := strings.Split(prj.Name, "-")
+		parts := strings.Split(p.Name, "-")
 		index := len(parts) - 1
 
-		partsPrjName := strings.Split(prj.Name, "-")
+		partsPrjName := strings.Split(p.Name, "-")
 		projectName := strings.Join(partsPrjName[:len(parts)-1], "-")
 
 		*services = append(*services, ServiceData{
 			Name:     svcName,
-			Project:  prj.Name,
+			Project:  p.Name,
 			Tags:     []string{svcName, parts[index], projectName, fmt.Sprintf(projectName + "-" + parts[index])},
 			Port:     env.Value,
 			Interval: "5s",

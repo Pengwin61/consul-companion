@@ -1,30 +1,16 @@
 package core
 
 import (
+	"consul-companion/internal/cfg"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-type Project struct {
-	Name   string
-	Path   string
-	DotEnv string
-	Env    []Env
-}
+func getListProjects(errCh chan error) (projects []Project) {
 
-type Env struct {
-	Key   string
-	Value string
-}
-
-var RootProjectPath = "/opt"
-
-func getListProjects(errCh chan error) []Project {
-	var projects []Project
-
-	dir, err := os.Open(RootProjectPath)
+	dir, err := os.Open(cfg.ROOT_PROJECT_PATH)
 	if err != nil {
 		errCh <- err
 		return nil
@@ -46,14 +32,15 @@ func getListProjects(errCh chan error) []Project {
 		if project.Name() == "containerd" {
 			continue
 		}
-		projects = append(projects, Project{project.Name(), filepath.Join(RootProjectPath, project.Name()), filepath.Join(RootProjectPath, project.Name(), ".env"), nil})
-
+		projects = append(projects, Project{
+			project.Name(),
+			filepath.Join(cfg.ROOT_PROJECT_PATH, project.Name()),
+			filepath.Join(cfg.ROOT_PROJECT_PATH, project.Name(), ".env"), nil})
 	}
 	return projects
 }
 
-func getListEnv(projects []Project, errCh chan error) []Project {
-	var prjs []Project
+func getListEnv(projects []Project, errCh chan error) (tmpProjects []Project) {
 
 	for _, project := range projects {
 		content, err := os.ReadFile(project.DotEnv)
@@ -71,9 +58,12 @@ func getListEnv(projects []Project, errCh chan error) []Project {
 			key := strings.TrimSpace(pair[0])
 			value := strings.TrimSpace(pair[1])
 
-			prjs = append(prjs, Project{project.Name, project.Path, project.DotEnv, append(project.Env, Env{key, value})})
+			tmpProjects = append(tmpProjects,
+				Project{project.Name,
+					project.Path,
+					project.DotEnv, append(project.Env, Env{key, value})})
 		}
 	}
 
-	return prjs
+	return tmpProjects
 }
