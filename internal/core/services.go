@@ -12,6 +12,7 @@ import (
 
 func RunCreatesServices(errCh chan error) {
 	var services []ServiceData
+	var tmpCheck []map[string]bool
 
 	litsProjects := getListProjects(errCh)
 	projectsWhithServices := getListEnv(litsProjects, errCh)
@@ -37,8 +38,13 @@ func RunCreatesServices(errCh chan error) {
 		if !ok {
 			log.Println("File changed", currentFile)
 			service.createServiceFile(currentFile)
+			tmpCheck = append(tmpCheck, map[string]bool{service.Name: true})
 		}
 	}
+	if len(tmpCheck) >= 1 {
+		restartDaemon()
+	}
+
 }
 
 func (s *ServiceData) createServiceFile(path string) {
