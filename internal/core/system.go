@@ -10,34 +10,6 @@ import (
 	"syscall"
 )
 
-func restartDaemon() {
-	fmt.Println("Restarting...")
-
-	// unitName := "consul-agent.service"
-
-	// conn, err := dbus.New()
-	// if err != nil {
-	// 	log.Fatal("Failed to connect to systemd DBus:", err)
-	// }
-	// defer conn.Close()
-
-	// log.Println("Starting service:", unitName)
-	// _, err = conn.StartUnit(unitName, "replace", nil)
-	// if err != nil {
-	// 	log.Fatal("Failed to start service:", err)
-	// }
-	// conn.RestartUnit(unitName, "replace", nil)
-
-	// // Проверка статуса службы
-	// status, err := conn.GetUnitType(unitName)
-	// if err != nil {
-	// 	log.Fatal("Failed to get service status:", err)
-	// }
-
-	// log.Println("Service status:", status)
-
-}
-
 func gracefulShutdown() {
 	// Graceful shutdown
 	stop := make(chan os.Signal, 1)

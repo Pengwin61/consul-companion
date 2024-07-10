@@ -1,16 +1,13 @@
 # consul-companion
 
-# About
+## About
 Компаньон взаимодействует с API Hashicorp Consul и позволяет регистрировать и дерегистрировать сервисы.
-
-
 
 
 # Run
 
 ```
 go run main.go api deregister --target "node-name"
-
 
 go run main.go sd watch --conf-dir "./temp/consul.d" --search "./temp/projects"
 ```
