@@ -12,6 +12,7 @@ import (
 
 func RunCreatesServices(errCh chan error) {
 	var services []ServiceData
+	var currentServices []string
 
 	litsProjects := getListProjects(errCh)
 	projectsWhithServices := getListEnv(litsProjects, errCh)
@@ -33,11 +34,18 @@ func RunCreatesServices(errCh chan error) {
 
 		service.createServiceFile(tmpFile)
 		ok := DiffChecksum(currentFile, tmpFile)
+		currentServices = append(currentServices, currentFile)
 
 		if !ok {
 			log.Println("File changed", currentFile)
 			service.createServiceFile(currentFile)
 		}
+	}
+
+	tmpService := getScanFolder(errCh)
+
+	for _, service := range difference(currentServices, tmpService) {
+		os.Remove(service)
 	}
 
 }
