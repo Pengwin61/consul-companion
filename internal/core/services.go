@@ -45,7 +45,15 @@ func RunCreatesServices(errCh chan error) {
 	tmpService := getScanFolder(errCh)
 
 	for _, service := range difference(currentServices, tmpService) {
-		os.Remove(service)
+
+		_, f := path.Split(service)
+		str := strings.Replace(f, ".hcl", "", 1)
+		result := strings.Split(str, "-")
+
+		if len(result) > 2 {
+			os.Remove(service)
+		}
+
 	}
 
 }
